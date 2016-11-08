@@ -1,5 +1,5 @@
 Plugin Naming
-#############
+=============
 
 The first naming decision you will need to make will be for your 
 project/repository.  For this we suggest the following format.
