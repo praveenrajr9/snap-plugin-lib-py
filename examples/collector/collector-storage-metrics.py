@@ -60,15 +60,18 @@ class StorageIOstats:
                 #self.metric_list['device'] = data['device']
         return result
 
+    @staticmethod
+    def S_VALUE(curr ,prev):
+        return float(curr - prev)
 
     def calculate_diff(self):
-        all_reads_per_itv = 0
-        all_writes_per_itv = 0
-        all_transfer_per_itv = 0
-        all_rrqm_per_itv = 0
-        all_wrqm_per_itv = 0
-        all_rdsec_per_itv = 0
-        all_wrsec_per_itv = 0
+        all_reads_per_itv = 0.0
+        all_writes_per_itv = 0.0
+        all_transfer_per_itv = 0.0
+        all_rrqm_per_itv = 0.0
+        all_wrqm_per_itv = 0.0
+        all_rdsec_per_itv = 0.0
+        all_wrsec_per_itv = 0.0
         all_avgrq_sz = 0.0
         all_avgqu_sz = 0.0
         all_await = 0.0
@@ -77,11 +80,11 @@ class StorageIOstats:
         all_util = 0.0
         if len(self.current_stats) == len(self.previous_stats):
             for device in self.devices:
-                reads_per_itv = self.current_stats[device]['reads'] - self.previous_stats[device]['reads']
-                writes_per_itv = self.current_stats[device]['writes'] - self.previous_stats[device]['writes']
+                reads_per_itv =  self.S_VALUE(self.current_stats[device]['reads'], self.previous_stats[device]['reads'])
+                writes_per_itv = self.S_VALUE(self.current_stats[device]['writes'], self.previous_stats[device]['writes'])
                 transfer_per_itv = reads_per_itv + writes_per_itv
-                rrqm_per_itv = self.current_stats[device]['reads_merged'] - self.previous_stats[device]['reads_merged']
-                wrqm_per_itv = self.current_stats[device]['writes_merged'] - self.previous_stats[device]['writes_merged']
+                rrqm_per_itv = self.S_VALUE(self.current_stats[device]['reads_merged'], self.previous_stats[device]['reads_merged'])
+                wrqm_per_itv = self.S_VALUE(self.current_stats[device]['writes_merged'], self.previous_stats[device]['writes_merged'])
                 rdsec_per_itv = (self.current_stats[device]['sectors_read'] - self.previous_stats[device]['sectors_read']) * 512
                 wrsec_per_itv = (self.current_stats[device]['sectors_written'] - self.previous_stats[device]['sectors_written']) * 512
                 avgrq_sz = 0.0
@@ -89,19 +92,19 @@ class StorageIOstats:
                 r_await = 0.0
                 w_await = 0.0
                 if transfer_per_itv != 0:
-                    avgrq_sz = (rdsec_per_itv + wrsec_per_itv) / transfer_per_itv
-                    await_time = (self.current_stats[device]['ms_reading']
+                    avgrq_sz = float((rdsec_per_itv + wrsec_per_itv) / transfer_per_itv)
+                    await_time = float((self.current_stats[device]['ms_reading']
                              - self.previous_stats[device]['ms_reading']
                              + (self.current_stats[device]['ms_writing']
-                               - self.previous_stats[device]['ms_writing'])) / transfer_per_itv
-                avgqu_sz = (self.current_stats[device]['weighted_ms_doing_io'] - self.previous_stats[device]['weighted_ms_doing_io'])/1000.0
+                               - self.previous_stats[device]['ms_writing'])) / transfer_per_itv)
+                avgqu_sz = float((self.current_stats[device]['weighted_ms_doing_io'] - self.previous_stats[device]['weighted_ms_doing_io'])/1000.0)
 
                 if reads_per_itv != 0:
-                    r_await = (self.current_stats[device]['ms_reading']
-                               - self.previous_stats[device]['ms_reading']) / reads_per_itv
+                    r_await = float((self.current_stats[device]['ms_reading']
+                               - self.previous_stats[device]['ms_reading']) / reads_per_itv)
                 if writes_per_itv !=0:
-                    w_await = (self.current_stats[device]['ms_writing']
-                               - self.previous_stats[device]['ms_writing']) / writes_per_itv
+                    w_await = float((self.current_stats[device]['ms_writing']
+                               - self.previous_stats[device]['ms_writing']) / writes_per_itv)
                 util = self.current_stats[device]['ms_doing_io'] - self.previous_stats[device]['ms_doing_io']
                 util = util / 10.0
 
