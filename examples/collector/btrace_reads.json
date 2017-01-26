@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "5s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/btrace/*/Reads_Requeued" :{}
+
+      },
+
+      "process": null,
+      "publish": null
+    }
+  }
+}

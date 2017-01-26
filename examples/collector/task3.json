@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+           "/intel/procfs/processes/*/ps_disk_ops_syscr": {},
+           "/intel/procfs/processes/*/ps_disk_octets_rchar": {}
+      },
+
+      "process": null,
+      "publish": [
+        {
+          "plugin_name": "file",
+          "config": {
+            "file": "/tmp/vmstat"
+          }
+        }
+      ]
+    }
+  }
+}

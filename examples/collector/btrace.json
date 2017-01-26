@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "10s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/btrace/*/IO unplugs":{},
+	"/intel/btrace/*/Read Dispatches": {},
+	"/intel/btrace/*/Read Dispatches KiB": {},
+	"/intel/btrace/*/Read Merges": {},
+	"/intel/btrace/*/Read Merges KiB": {},
+	"/intel/btrace/*/Read depth": {},
+	"/intel/btrace/*/Reads Completed": {},
+	"/intel/btrace/*/Reads Completed KiB": {},
+	"/intel/btrace/*/Reads Queued" : {},
+	"/intel/btrace/*/Reads Queued KiB": {},
+	"/intel/btrace/*/Reads Requeued" :{},
+	"/intel/btrace/*/Timer unplugs" :{},
+	"/intel/btrace/*/Write Dispatches":{},
+	"/intel/btrace/*/Write Dispatches KiB": {},
+	"/intel/btrace/*/Write Merges": {},       
+	"/intel/btrace/*/Write Merges KiB": {},
+	"/intel/btrace/*/Write depth": {},        
+	"/intel/btrace/*/Writes Completed": {},
+	"/intel/btrace/*/Writes Completed KiB": {},
+	"/intel/btrace/*/Writes Queued" :{},
+	"/intel/btrace/*/Writes Queued KiB": {},
+	"/intel/btrace/*/Writes Requeued": {}
+
+      },
+
+      "process": null,
+      "publish": [
+        {
+          "plugin_name": "file",
+          "config": {
+            "file": "/home/praveenraj/btrace"
+          }
+        }
+      ]
+    }
+  }
+}
