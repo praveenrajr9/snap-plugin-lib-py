@@ -21,7 +21,6 @@ import os
 import random
 import time
 import datetime
-#import example111
 import snap_plugin.v1 as snap
 LOG = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class IOSnoopStats:
     rq_issue_enable_path = "/sys/kernel/debug/tracing/events/block/block_rq_issue/enable"
     def __init__(self):
         
-        self.metric_list = {}
+        self.metric_list = []
         self.starts = {}
         self.comms = {}
 	self.pids = {}
@@ -61,9 +60,9 @@ class IOSnoopStats:
 
         rq_complete_enable.write("0")
         rq_issue_enable.write("0")
-        file_wrt = open(self.trace_file_path,"w")
-        file_wrt.write("")
-        file_wrt.close()
+        trace_file = open(self.trace_file_path,"w")
+        trace_file.write("")
+        trace_file.close()
         rq_complete_enable.close()
         rq_issue_enable.close()
 
@@ -80,53 +79,52 @@ class IOSnoopStats:
         starts = {}
         comms = {}
         pids = {}
-
-        with open(self.trace_file_path,"r") as f:
-            for line in (l for l in f if l != ""):
-                if '#' not in line:
+        trace_file = open(self.trace_file_path,"r")
+        lines = trace_file.readlines()  
+        for line in lines:
+            if '#' not in line:
 #['<idle>-0', '[005]', 'd.s.', '365147.088940:', 'block_rq_complete:', '8,0', 'WS', '()', '471135552', '+', '0', '[0]']
 
-                    line_list = line.split()
-                    line_len = len(line_list)
-                    time_t = line_list[3]
-                    time_t = float(time_t.split(":")[0])
-                    comm_pid = line_list[0]
-                    comm_pid = comm_pid.split("-")
-                    pid = comm_pid[len(comm_pid)-1]
-                    comm_name = '-'.join(comm_pid[0:len(comm_pid)-1])
-                    dev = line_list[5]
-                    if 'issue' in line:
-                        sector_loc = line_list[line_len - 4]
-                        starts[sector_loc + dev] = time_t
-                        comms[sector_loc + dev] = comm_name
-                        pids[sector_loc + dev] = pid
-
-                    if 'complete' in line:
-                        stats = {}
-                        action_type = line_list[line_len - 6]
-                        sector_loc = line_list[line_len - 4]
-                        nsectors = int(line_list[line_len - 2])
-                        try:
-                            comm = comms[sector_loc + dev]
-                            pid = pids[sector_loc + dev]
-                            latency = 1000 * (time_t - starts[sector_loc + dev])
-                            ends = time_t
-                            nsectors = nsectors * 512
+                line_list = line.split()
+                line_len = len(line_list)
+                time_t = line_list[3]
+                time_t = float(time_t.split(":")[0])
+                comm_pid = line_list[0]
+                comm_pid = comm_pid.split("-")
+                pid = comm_pid[len(comm_pid)-1]
+                comm_name = '-'.join(comm_pid[0:len(comm_pid)-1])
+                dev = line_list[5]
+                if 'issue' in line:
+                    sector_loc = line_list[line_len - 4]
+                    starts[sector_loc + dev] = time_t
+                    comms[sector_loc + dev] = comm_name
+                    pids[sector_loc + dev] = pid
+                if 'complete' in line:
+                    stats = {}
+                    action_type = line_list[line_len - 6]
+                    sector_loc = line_list[line_len - 4]
+                    nsectors = int(line_list[line_len - 2])
+                    try:
+                        comm = comms[sector_loc + dev]
+                        pid = pids[sector_loc + dev]
+                        latency = 1000 * (time_t - starts[sector_loc + dev])
+                        ends = time_t
+                        nsectors = nsectors * 512
                       
-                            stats['command'] = comm
-                            stats['pid'] = pid
-                            stats['latency'] = latency
-                            stats['start'] = starts[sector_loc + dev]
-                            stats['end'] = ends
-                            stats['type'] = action_type
-                            stats['dev'] = dev
-                            stats['block'] = sector_loc
-                            stats['bytes'] = nsectors 
-                            stats['lat'] = latency
-                            self.metric_list.append(stats)    
-                        except Exception as e:
-                            continue
-	return self.metric_list
+                        stats['command'] = comm
+                        stats['pid'] = pid
+                        stats['latency'] = latency
+                        stats['start'] = starts[sector_loc + dev]
+                        stats['end'] = ends
+                        stats['type'] = action_type
+                        stats['dev'] = dev
+                        stats['block'] = sector_loc
+                        stats['bytes'] = nsectors 
+                        stats['lat'] = latency
+                        self.metric_list.append(stats)    
+                    except Exception as e:
+                        continue
+        return self.metric_list
 
 
 
