@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/emon/*/CPU_CLK_UNHALTED.REF_TSC": {},
+	"/intel/emon/*/CPU_CLK_UNHALTED.THREAD": {},
+	"/intel/emon/*/INST_RETIRED.ANY": {}
+      },
+
+      "process": null,
+      "publish": [
+        {
+          "plugin_name": "file",
+          "config": {
+            "file": "/home/praveen/emon_publish/emonstat"
+          }
+        }
+      ]
+    }
+  }
+}
