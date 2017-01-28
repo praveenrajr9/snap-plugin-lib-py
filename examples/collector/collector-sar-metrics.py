@@ -102,7 +102,7 @@ class SarVMStats(snap.Collector):
         metrics = []
         metric_names = ['pgpgin_per_itv', 'pgpgout_per_itv', 'pgfault_per_itv',
                         'pgfree_per_itv', 'pgsteal_per_itv', 'pgscan_kswapd_per_itv',
-			'pgscan_direct_per_itv', 'vmeff%']
+			            'pgscan_direct_per_itv', 'vmeff%']
                          
         for key in metric_names:
             metric = snap.Metric(
@@ -121,9 +121,6 @@ class SarVMStats(snap.Collector):
     def collect(self, metrics):
         LOG.debug("CollectMetrics called")
 
-        fs = open("/sys/kernel/debug/tracing/events/block/block_rq_complete/enable","w")
-        fs.seek(0)
-        fs.write("1")
         self.vm_stats.previous_stats = self.vm_stats.current_stats
         self.vm_stats.current_stats = self.vm_stats.read_vmstats()
         time.sleep(2)
