@@ -66,8 +66,8 @@ class CollectorEmonStats(snap.Collector):
             temp_list = line.split("\t")
             metric_name = temp_list[0]
             stat[metric_name] = {}
-        for i in range(2,len(temp_list)-1):
-            stat[metric_name]['cpu'+str(i-1)] = temp_list[i]
+            for i in range(2,len(temp_list)-1):
+                stat[metric_name]['cpu'+str(i-1)] = temp_list[i]
         return stat
 
     def collect_metrics(self):
@@ -75,7 +75,7 @@ class CollectorEmonStats(snap.Collector):
         line = self.linep
         lines = []
         try:
-            for line in emon_output_file:
+            for line in self.emon_output_file:
                 if "===" in line:
                     self.linep = line
                     break
@@ -97,7 +97,7 @@ class CollectorEmonStats(snap.Collector):
         new_metrics = [] 
        
         metrics_dict = self.collect_metrics()
-                  
+        LOG.debug(metrics_dict)                  
         if metrics_dict == {}:
             LOG.debug("empty metrics")
             return metrics
@@ -105,12 +105,13 @@ class CollectorEmonStats(snap.Collector):
 
              
         for metric in metrics:             
-            
+            LOG.debug(metric)            
             typ = metric.namespace[2].value
+            LOG.debug(metrics_dict[metric.namespace[3].value])
             if typ == '*':
                  try:                        
-                     for cpu_num, metric_val in metric_dict[metric.namespace[2].value].iteritems():
-                            
+                     for cpu_num, metric_val in metrics_dict[metric.namespace[3].value].iteritems():
+                         LOG.debug(cpu_num, metric_val)   
                          new_metric = snap.Metric(version=1, Description="emon metrics")
                          new_metric.namespace.add_static_element("intel")
                          new_metric.namespace.add_static_element("emon")
@@ -139,5 +140,6 @@ class CollectorEmonStats(snap.Collector):
 
 
 if __name__ == "__main__":
+
 
      CollectorEmonStats().start_plugin()
