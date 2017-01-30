@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/emon/*/CPU_CLK_UNHALTED.THREAD": {},
+	"/intel/emon/*/INST_RETIRED.ANY_P": {}
+      },
+
+      "process": null,
+      "publish": [
+        {
+ 	   "plugin_name": "influxdb",
+           "config": {
+            "host": "localhost",
+            "port": 8086,
+            "database": "snap_metrics",
+            "user": "intel",
+            "password": "intel123"
+
+          }
+
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+
+	"/intel/procfs/processes/*/ps_code" :{},
+	"/intel/procfs/processes/*/ps_count" :{},
+	"/intel/procfs/processes/*/ps_cputime_system": {},
+	"/intel/procfs/processes/*/ps_cputime_user" :{},
+	"/intel/procfs/processes/*/ps_data": {},
+	"/intel/procfs/processes/*/ps_disk_octets_rchar": {},
+	"/intel/procfs/processes/*/ps_disk_octets_rchar_per_itv": {},
+	"/intel/procfs/processes/*/ps_disk_octets_wchar": {},
+	"/intel/procfs/processes/*/ps_disk_octets_wchar_per_itv": {},
+	"/intel/procfs/processes/*/ps_disk_ops_syscr":{},
+	"/intel/procfs/processes/*/ps_disk_ops_syscr_per_itv":{},
+	"/intel/procfs/processes/*/ps_disk_ops_syscw": {},
+	"/intel/procfs/processes/*/ps_disk_ops_syscw_per_itv": {},
+	"/intel/procfs/processes/*/ps_pagefaults_maj": {},
+	"/intel/procfs/processes/*/ps_pagefaults_maj_per_itv": {},
+	"/intel/procfs/processes/*/ps_pagefaults_min": {},
+	"/intel/procfs/processes/*/ps_pagefaults_min_per_itv": {},
+	"/intel/procfs/processes/*/ps_rss": {},
+	"/intel/procfs/processes/*/ps_stacksize": {},
+	"/intel/procfs/processes/*/ps_vm": {},
+	"/intel/procfs/processes/dead": {},
+	"/intel/procfs/processes/parked": {},
+	"/intel/procfs/processes/running": {},
+	"/intel/procfs/processes/sleeping": {},
+	"/intel/procfs/processes/stopped": {},
+	"/intel/procfs/processes/tracing" : {},
+	"/intel/procfs/processes/waiting": {},
+	"/intel/procfs/processes/wakekill": {},
+	"/intel/procfs/processes/waking": {},
+	"/intel/procfs/processes/zombie": {}
+
+
+      },
+
+      "process": null,
+      "publish": [
+        {
+          "plugin_name": "influxdb",
+          "config": {
+            "host": "localhost",
+            "port": 8086,
+            "database": "snap_metrics",
+            "user": "intel",
+            "password": "intel123"
+
+          }
+        }
+      ]
+    }
+  }
+}

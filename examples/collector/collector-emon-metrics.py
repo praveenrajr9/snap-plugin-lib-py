@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 class CollectorEmonStats(snap.Collector):
     def __init__(self):
         self.first_time = True
-        self.emon_output_file = open("/home/praveen/sep/result/result.csv","r")        
+        self.emon_output_file = open("/home/intel/result.txt","r")        
         self.linep = None
         super(self.__class__, self).__init__("collector-emon-metrics-py", 1)
          
@@ -39,7 +39,11 @@ class CollectorEmonStats(snap.Collector):
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
         metrics = []
-        metric_names =  ['INST_RETIRED.ANY','CPU_CLK_UNHALTED.THREAD', 'CPU_CLK_UNHALTED.REF_TSC']
+        metric_names =  ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_LOAD_UOPS_RETIRED.L3_HIT',
+                         'MEM_LOAD_UOPS_RETIRED.L3_MISS','FP_ASSIST.ANY,AVX_INSTS.ALL',
+                         'OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_HIT.ANY_RESPONSE',
+                         'OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_MISS.ANY_RESPONSE',
+                         'UNC_M_CAS_COUNT.RD','UNC_M_CAS_COUNT.WR']
  
                          
         for key in metric_names:
