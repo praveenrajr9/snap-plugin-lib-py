@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/storageIOstats/device/*/avgqu_sz": {},
+	"/intel/storageIOstats/device/*/avgrq_sz": {},
+	"/intel/storageIOstats/device/*/await": {},
+	"/intel/storageIOstats/device/*/r_await": {},
+	"/intel/storageIOstats/device/*/rdsec_per_itv": {},
+	"/intel/storageIOstats/device/*/reads_per_itv": {},
+	"/intel/storageIOstats/device/*/rrqm_per_itv": {},
+	"/intel/storageIOstats/device/*/transfer_per_itv": {},
+	"/intel/storageIOstats/device/*/util": {},
+	"/intel/storageIOstats/device/*/w_await": {},
+	"/intel/storageIOstats/device/*/writes_per_itv": {},
+	"/intel/storageIOstats/device/*/wrqm_per_itv": {},
+	"/intel/storageIOstats/device/*/wrsec_per_itv": {}
+
+      },
+
+      "process": null,
+      "publish": [
+        {
+           "plugin_name": "influxdb",
+           "config": {
+            "host": "localhost",
+            "port": 8086,
+            "database": "disk_metrics",
+            "user": "intel",
+            "password": "intel123"
+
+          }
+
+        }
+      ]
+    }
+  }
+}

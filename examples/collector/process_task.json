@@ -51,7 +51,7 @@
           "config": {
             "host": "localhost",
             "port": 8086,
-            "database": "snap_metrics",
+            "database": "pidstat_metrics",
             "user": "intel",
             "password": "intel123"
 

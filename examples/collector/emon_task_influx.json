@@ -10,7 +10,14 @@
     "collect": {
       "metrics": {
 	"/intel/emon/*/CPU_CLK_UNHALTED.THREAD": {},
-	"/intel/emon/*/INST_RETIRED.ANY_P": {}
+	"/intel/emon/*/FP_ASSIST.ANY,AVX_INSTS.ALL": {},
+	"/intel/emon/*/INST_RETIRED.ANY_P": {},
+	"/intel/emon/*/MEM_LOAD_UOPS_RETIRED.L3_HIT": {},
+	"/intel/emon/*/MEM_LOAD_UOPS_RETIRED.L3_MISS": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_HIT.ANY_RESPONSE": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_MISS.ANY_RESPONSE": {},
+	"/intel/emon/*/UNC_M_CAS_COUNT.RD": {},
+	"/intel/emon/*/UNC_M_CAS_COUNT.WR": {}
       },
 
       "process": null,
@@ -20,7 +27,7 @@
            "config": {
             "host": "localhost",
             "port": 8086,
-            "database": "snap_metrics",
+            "database": "emon_metrics",
             "user": "intel",
             "password": "intel123"
 
