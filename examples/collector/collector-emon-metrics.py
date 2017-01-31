@@ -40,7 +40,7 @@ class CollectorEmonStats(snap.Collector):
         LOG.debug("GetMetricTypes called")
         metrics = []
         metric_names =  ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_LOAD_UOPS_RETIRED.L3_HIT',
-                         'MEM_LOAD_UOPS_RETIRED.L3_MISS','FP_ASSIST.ANY,AVX_INSTS.ALL',
+                         'MEM_LOAD_UOPS_RETIRED.L3_MISS','FP_ASSIST.ANY','AVX_INSTS.ALL',
                          'OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_HIT.ANY_RESPONSE',
                          'OFFCORE_RESPONSE:request=ALL_REQUESTS:response=LLC_MISS.ANY_RESPONSE',
                          'UNC_M_CAS_COUNT.RD','UNC_M_CAS_COUNT.WR']
@@ -111,7 +111,7 @@ class CollectorEmonStats(snap.Collector):
         for metric in metrics:             
             LOG.debug(metric)            
             typ = metric.namespace[2].value
-            LOG.debug(metrics_dict[metric.namespace[3].value])
+           # LOG.debug(metrics_dict[metric.namespace[3].value])
             if typ == '*':
                  try:                        
                      for cpu_num, metric_val in metrics_dict[metric.namespace[3].value].iteritems():
@@ -126,7 +126,7 @@ class CollectorEmonStats(snap.Collector):
                          new_metrics.append(new_metric)
                  except Exception as e:
                      LOG.debug("metric key error") 
-                     LOG.debug(e)
+                    # LOG.debug(e)
                      continue
                             
             

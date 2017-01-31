@@ -10,7 +10,8 @@
     "collect": {
       "metrics": {
 	"/intel/emon/*/CPU_CLK_UNHALTED.THREAD": {},
-	"/intel/emon/*/FP_ASSIST.ANY,AVX_INSTS.ALL": {},
+	"/intel/emon/*/FP_ASSIST.ANY":{},
+        "/intel/emon/*/AVX_INSTS.ALL": {},
 	"/intel/emon/*/INST_RETIRED.ANY_P": {},
 	"/intel/emon/*/MEM_LOAD_UOPS_RETIRED.L3_HIT": {},
 	"/intel/emon/*/MEM_LOAD_UOPS_RETIRED.L3_MISS": {},
