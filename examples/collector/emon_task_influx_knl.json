@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+   
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/emon/*/CPU_CLK_UNHALTED.THREAD": {},
+	"/intel/emon/*/INST_RETIRED.ANY_P": {},
+	"/intel/emon/*/MEM_UOPS_RETIRED.L2_HIT_LOADS": {},
+	"/intel/emon/*/MEM_UOPS_RETIRED.L2_MISS_LOADS": {},
+	"/intel/emon/*/UOPS_RETIRED.PACKED_SIMD": {},
+	"/intel/emon/*/UOPS_RETIRED.SCALAR_SIMD": {},
+	"/intel/emon/*/CYCLES_DIV_BUSY.ALL": {},
+	"/intel/emon/*/MACHINE_CLEARS.FP_ASSIST": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_NEAR": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ANY_REQUEST:response=ANY_RESPONSE": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_FAR": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_NEAR": {},
+	"/intel/emon/*/OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_FAR": {}
+      },
+
+      "process": null,
+      "publish": [
+        {
+ 	   "plugin_name": "influxdb",
+           "config": {
+            "host": "localhost",
+            "port": 8086,
+            "database": "emon_metrics",
+            "user": "intel",
+            "password": "intel123"
+
+          }
+
+        }
+      ]
+    }
+  }
+}
