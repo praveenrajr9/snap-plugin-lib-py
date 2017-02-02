@@ -103,10 +103,11 @@ class CollectorEmonStats(snap.Collector):
         metrics = []
         #try:
         #    config = ConfigParser.ConfigParser()
-        #    config.readfp(open('config.txt')
-        #    metric_names = config.get('Metrics','Metrics_List')
+        #    config.readfp(open('config.txt'))
+        #    metric_names = config.get('EMON_METRICS','metrics_list')
         #    if metric_names == ''
         #        LOG.debug(no metric names)
+        #    metric_names = metric_names.split(",")
         #except Exception as e:
         #    LOG.debug("Error in config file")
         #    LOG.debug(e)
