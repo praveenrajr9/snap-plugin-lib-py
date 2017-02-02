@@ -24,6 +24,8 @@ import time
 import threading
 import re
 import snap_plugin.v1 as snap
+import ConfigParser as ConfigParser
+
 LOG = logging.getLogger(__name__)
 
 # collector buffer
@@ -52,7 +54,7 @@ class CollectorThread(threading.Thread):
             metric_name = temp_list[0]
             stat[metric_name] = {}
             for i in range(2,len(temp_list)-1):
-                stat[metric_name]['cpu'+str(i-1)] = temp_list[i]
+                stat[metric_name]['cpu'+str(i-2)] = temp_list[i]
         return stat
 
 
@@ -99,6 +101,17 @@ class CollectorEmonStats(snap.Collector):
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
         metrics = []
+        #try:
+        #    config = ConfigParser.ConfigParser()
+        #    config.readfp(open('config.txt')
+        #    metric_names = config.get('Metrics','Metrics_List')
+        #    if metric_names == ''
+        #        LOG.debug(no metric names)
+        #except Exception as e:
+        #    LOG.debug("Error in config file")
+        #    LOG.debug(e)
+        #    assert(False)
+        
         metric_names = ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_UOPS_RETIRED.L2_HIT_LOADS','MEM_UOPS_RETIRED.L2_MISS_LOADS',
                         'UOPS_RETIRED.PACKED_SIMD','UOPS_RETIRED.SCALAR_SIMD','CYCLES_DIV_BUSY.ALL','MACHINE_CLEARS.FP_ASSIST',
                         'OFFCORE_RESPONSE:request=ANY_REQUEST:response=ANY_RESPONSE','OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_NEAR',

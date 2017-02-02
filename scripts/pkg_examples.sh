@@ -47,52 +47,21 @@ if [ -z "$VIRTUAL_ENV" ]; then
     exit 1
 fi
 
-_info "packaging ${__proj_dir}/examples/collector/rand.py"
+_info "packaging ${__proj_dir}/examples/collector/collector-storage-metrics.py"
 _info "running: acbuild begin"
 acbuild begin
-_info "running: acbuild set-name randpy"
-acbuild set-name randpy
+_info "running: acbuild set-name collector-storage-metrics-py"
+acbuild set-name collector-storage-metrics-py
 _info "running: acbuild copy $VIRTUAL_ENV .venv"
 acbuild copy $VIRTUAL_ENV .venv
-_info "running: acbuild copy ${__proj_dir}/examples/collector/rand.py rand.py"
-acbuild copy ${__proj_dir}/examples/collector/rand.py rand.py
-_info "running: acbuild set-exec ./.venv/bin/python rand.py"
-acbuild set-exec ./.venv/bin/python rand.py
-_info "running: acbuild write ${__proj_dir}/snap-plugin-collector-randpy-linux-x86_64.aci"
-acbuild write ${__proj_dir}/snap-plugin-collector-randpy-linux-x86_64.aci
+_info "running: acbuild copy ${__proj_dir}/examples/collector/collector-storage-metrics.py collector-storage-metrics.py"
+acbuild copy ${__proj_dir}/examples/collector/collector-storage-metrics.py collector-storage-metrics.py
+_info "running: acbuild set-exec ./.venv/bin/python collector-storage-metrics.py"
+acbuild set-exec ./.venv/bin/python collector-storage-metrics.py
+_info "running: acbuild write ${__proj_dir}/snap-plugin-collector-storage-linux-x86_64.aci"
+acbuild write ${__proj_dir}/snap-plugin-collector-storage-linux-x86_64.aci
 _info "running: acbuild end"
 acbuild end
 
-_info "packaging ${__proj_dir}/examples/processor/tag.py"
-_info "running: acbuild begin"
-acbuild begin
-_info "running: acbuild set-name tagpy"
-acbuild set-name randpy
-_info "running: acbuild copy $VIRTUAL_ENV .venv"
-acbuild copy $VIRTUAL_ENV .venv
-_info "running: acbuild copy ${__proj_dir}/examples/processor/tag.py tag.py"
-acbuild copy ${__proj_dir}/examples/processor/tag.py tag.py
-_info "running: acbuild set-exec ./.venv/bin/python rand.py"
-acbuild set-exec ./.venv/bin/python tag.py
-_info "running: acbuild write ${__proj_dir}/snap-plugin-processor-tagpy-linux-x86_64.aci"
-acbuild write ${__proj_dir}/snap-plugin-processor-tagpy-linux-x86_64.aci
-_info "running: acbuild end"
-acbuild end
-
-_info "packaging ${__proj_dir}/examples/publisher/file.py"
-_info "running: acbuild begin"
-acbuild begin
-_info "running: acbuild set-name filepy"
-acbuild set-name randpy
-_info "running: acbuild copy $VIRTUAL_ENV .venv"
-acbuild copy $VIRTUAL_ENV .venv
-_info "running: acbuild copy ${__proj_dir}/examples/publisher/file.py file.py"
-acbuild copy ${__proj_dir}/examples/publisher/file.py file.py
-_info "running: acbuild set-exec ./.venv/bin/python file.py"
-acbuild set-exec ./.venv/bin/python file.py
-_info "running: acbuild write ${__proj_dir}/snap-plugin-publisher-filepy-linux-x86_64.aci"
-acbuild write ${__proj_dir}/snap-plugin-publisher-filepy-linux-x86_64.aci
-_info "running: acbuild end"
-acbuild end
 
 _info "done"
