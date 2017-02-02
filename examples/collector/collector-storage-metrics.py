@@ -20,7 +20,7 @@ import logging
 import os
 import random
 import time
-#import example111
+
 import snap_plugin.v1 as snap
 LOG = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class StorageIOstats:
                 data = dict(zip(self.columns_disk, parts))
                 result[data['device']] = dict((k, int(v)) for k, v in data.iteritems() if k != 'device')
                 self.devices.append(data['device'])
-                #self.metric_list['device'] = data['device']
+                
         return result
 
     @staticmethod
@@ -200,9 +200,9 @@ class StorageIOMetrics(snap.Collector):
             self.storage_io_stats.previous_stats = self.storage_io_stats.current_stats
             self.storage_io_stats.current_stats = self.storage_io_stats.read_diskstats()
             devices_stat_list = self.storage_io_stats.calculate_diff()
-            LOG.debug(self.storage_io_stats.previous_stats, self.storage_io_stats.current_stats)
+            
             for metric in metrics:
-               # print metrics
+               
 	        dev_type = metric.namespace[3].value
                 if dev_type == '*':
                     for device in devices_stat_list:
@@ -212,8 +212,7 @@ class StorageIOMetrics(snap.Collector):
                             new_metric.namespace.add_static_element("storageIOstats")
                             new_metric.namespace.add_static_element("device")
                             new_metric.namespace.add_static_element(device)
-                            new_metric.namespace.add_static_element(metric.namespace[4].value)
-                            #metric.namespace[3].value = device
+                            new_metric.namespace.add_static_element(metric.namespace[4].value)                            
                             new_metric.data = devices_stat_list[device][metric.namespace[4].value]
                             new_metric.timestamp = time.time()
                             new_metrics.append(new_metric)
