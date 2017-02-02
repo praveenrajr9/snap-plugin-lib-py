@@ -206,16 +206,20 @@ class StorageIOMetrics(snap.Collector):
 	        dev_type = metric.namespace[3].value
                 if dev_type == '*':
                     for device in devices_stat_list:
-                        new_metric = snap.Metric(version=1, Description="IO Stats Metrics")
-                        new_metric.namespace.add_static_element("intel")
-                        new_metric.namespace.add_static_element("storageIOstats")
-                        new_metric.namespace.add_static_element("device")
-                        new_metric.namespace.add_static_element(device)
-                        new_metric.namespace.add_static_element(metric.namespace[4].value)
-                        #metric.namespace[3].value = device
-                        new_metric.data = devices_stat_list[device][metric.namespace[4].value]
-                        new_metric.timestamp = time.time()
-                        new_metrics.append(new_metric)
+                        try:
+                            new_metric = snap.Metric(version=1, Description="IO Stats Metrics")
+                            new_metric.namespace.add_static_element("intel")
+                            new_metric.namespace.add_static_element("storageIOstats")
+                            new_metric.namespace.add_static_element("device")
+                            new_metric.namespace.add_static_element(device)
+                            new_metric.namespace.add_static_element(metric.namespace[4].value)
+                            #metric.namespace[3].value = device
+                            new_metric.data = devices_stat_list[device][metric.namespace[4].value]
+                            new_metric.timestamp = time.time()
+                            new_metrics.append(new_metric)
+                        except Exception as e:
+                            LOG.debug(e)
+                            continue
 	        else:
                     try:
                         new_metric = snap.Metric(version=1, Description="IO Stats Metrics")
@@ -229,6 +233,7 @@ class StorageIOMetrics(snap.Collector):
                         new_metrics.append(new_metric)
                     except Exception as e:
                         LOG.debug(e)
+                        continue
 
 
 
