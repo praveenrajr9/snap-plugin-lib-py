@@ -39,7 +39,7 @@ class CollectorThread(threading.Thread):
         self.threadID = threadID
         self.name = name
         self.counter = counter
-        self.emon_output_file = open("/tmp/asnaraya/result.txt","r")
+        self.emon_output_file = open("/home/intel/result.txt","r")
         self.linep = None
        
 
@@ -101,27 +101,26 @@ class CollectorEmonStats(snap.Collector):
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
         metrics = []
-      # try:
-      #     config_parser = ConfigParser.ConfigParser()
-      #     config_parser.readfp(open('/home/intel/config.conf'))
-      #     metric_names = config_parser.get('EMON_METRICS','metrics_list')
-      #     metric_names =  metric_names.split(",")
-      #     if metric_names == []:
-      #         LOG.debug("no metric names")
-      # except Exception as e:
-      #     LOG.debug("Error in config file")
-      #     LOG.debug(e)
-
-       
-
+        metric_names = []
+        try:
+            config_parser = ConfigParser.ConfigParser()
+            config_parser.readfp(open('/home/intel/config.conf'))
+            metric_names = config_parser.get('EMON_METRICS','metrics_list')
+            metric_names =  metric_names.split(",")
+            if metric_names == []:
+                LOG.debug("no metric names")
+        except Exception as e:
+            LOG.debug("Error in config file")
+            LOG.debug(e)
+          
+        
+        #metric_names = ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_UOPS_RETIRED.L2_HIT_LOADS','MEM_UOPS_RETIRED.L2_MISS_LOADS',
+         #               'UOPS_RETIRED.PACKED_SIMD','UOPS_RETIRED.SCALAR_SIMD','CYCLES_DIV_BUSY.ALL','MACHINE_CLEARS.FP_ASSIST',
+          #              'OFFCORE_RESPONSE:request=ANY_REQUEST:response=ANY_RESPONSE','OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_NEAR',
+           #             'OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_FAR','OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_NEAR',
+            #            'OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_FAR']
  
-        metric_names = ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_UOPS_RETIRED.L2_HIT_LOADS','MEM_UOPS_RETIRED.L2_MISS_LOADS',
-                        'UOPS_RETIRED.PACKED_SIMD','UOPS_RETIRED.SCALAR_SIMD','CYCLES_DIV_BUSY.ALL','MACHINE_CLEARS.FP_ASSIST',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=ANY_RESPONSE','OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_NEAR',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_FAR','OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_NEAR',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_FAR']
- 
-                         
+        LOG.debug(metric_names)                        
         for key in metric_names:
             metric = snap.Metric(
                 namespace=[
