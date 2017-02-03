@@ -51,44 +51,28 @@ class CollectorThread(threading.Thread):
     def add_to_tree(self, metric_name, core_num, val):
       
         LOG.debug("add to topology_tree")
-        LOG.debug(core_num)
-        LOG.debug( metric_name)
-        LOG.debug( val)
         pd_table = self.shared_objs.pd_table
         topology_tree = self.shared_objs.topology_tree
-        LOG.debug(pd_table)
         try:
             logical_proc = pd_table[3][core_num]
             physical_proc = pd_table[1][core_num]
             tile = pd_table[4][core_num]
-            LOG.debug(physical_proc)
-            LOG.debug(logical_proc)
-            LOG.debug(tile)
-            LOG.debug(topology_tree[physical_proc][logical_proc]) 
             topology_tree[physical_proc][logical_proc][tile][core_num][metric_name] = val
-            #LOG.debug(topology_tree)
         except Exception as e:
              LOG.debug(e)
              LOG.debug("add_to_tree_error")
         self.shared_objs.topology_tree = topology_tree
-        LOG.debug("add_to_tree")
-        LOG.debug(self.shared_objs.topology_tree)
 
     def aggregate_metrics(self, stat):
         topology_tree = self.shared_objs.topology_tree     
-        LOG.debug(topology_tree)
-        LOG.debug(0 in topology_tree) 
         for name, value in stat.iteritems():
-            LOG.debug(name)
             for physical_proc in topology_tree:
                 p_proc_sum = 0
                 for logicalp in topology_tree[physical_proc]:
                     l_proc_sum = 0
                     for tile in topology_tree[physical_proc][logicalp]:
                         t_num_sum = 0
-                        LOG.debug(topology_tree[physical_proc][logicalp][tile])
                         for os_core in topology_tree[physical_proc][logicalp][tile]:
-	                   # t_num[name]["p-l-t"] = t_num[name]["p-l-t"] + os_core[name]
                             try: 
                                 core_value = topology_tree[physical_proc][logicalp][tile][os_core][name]
                                 if topology_tree[physical_proc][logicalp][tile][os_core] == {}:
@@ -97,15 +81,11 @@ class CollectorThread(threading.Thread):
                             except Exception as e:
                                 LOG.debug(e)
                                 continue
-                        LOG.debug(stat[name])
                         stat[name]["p" + str(physical_proc) + "-l" + str(logicalp) + "-t" + str(tile)] = t_num_sum
-                        LOG.debug(stat[name]["p" + str(physical_proc) + "-l" + str(logicalp) + "-t" + str(tile)])		
                         l_proc_sum = l_proc_sum + t_num_sum
                     stat[name]["p" + str(physical_proc) + "-l" + str(logicalp)] = l_proc_sum
                     p_proc_sum = p_proc_sum +  l_proc_sum
                 stat[name]["p"+ str(physical_proc)] =  p_proc_sum
-                LOG.debug("unique test 1")
-                LOG.debug(stat)
         return stat       
 
     def parse_metrics(self, lines):
@@ -121,8 +101,6 @@ class CollectorThread(threading.Thread):
             for i in range(2,len(temp_list)-1):
                 stat[metric_name]['cpu'+str(i-2)] = temp_list[i]
                 self.add_to_tree(metric_name, int(i-2), temp_list[i])
-        LOG.debug("parse metrcis after")
-        
         
         stat = self.aggregate_metrics(stat)
         return stat
@@ -148,8 +126,6 @@ class CollectorThread(threading.Thread):
                     
                     collected_metrics = self.parse_metrics(lines)
                     collected_metric_buffer.append(collected_metrics)
-                    LOG.debug(lines)
-                    LOG.debug("one iteration completed")
                     lines = []
                     time.sleep(1)
                     
@@ -187,29 +163,21 @@ class CollectorEmonStats(snap.Collector):
 	    if phys_proc not in proc_tree:
 	        proc_tree[phys_proc] = {}
 	        proc_tree[phys_proc][logical_proc] = {}
-	       # proc_tree[phys_proc]['data'] = {}
 	        proc_tree[phys_proc][logical_proc][tile] = {}
-	       # proc_tree[phys_proc][logical_proc]['data'] = {}
 	        proc_tree[phys_proc][logical_proc][tile][os_core] = {}
-	       # proc_tree[phys_proc][logical_proc][tile]['data'] = {}
 
 	        continue
 	    if logical_proc not in proc_tree[phys_proc]:
 	        proc_tree[phys_proc][logical_proc] = {}
-	       # proc_tree[phys_proc][logical_proc]['data'] = {}
 	        proc_tree[phys_proc][logical_proc][tile] = {}
-	       # proc_tree[phys_proc][logical_proc][tile]['data'] = {}
 	        proc_tree[phys_proc][logical_proc][tile][os_core] = {}
 	        continue
 	    if tile not in proc_tree[phys_proc][logical_proc]:
 	        proc_tree[phys_proc][logical_proc][tile] = {}
-	       # proc_tree[phys_proc][logical_proc][tile]['data'] = {}
 	        proc_tree[phys_proc][logical_proc][tile][os_core] = {}
 
 	    if os_core not in proc_tree[phys_proc][logical_proc][tile]:
         	proc_tree[phys_proc][logical_proc][tile][os_core] = {}
-        LOG.debug("build tree")
-        LOG.debug(proc_tree)
 	return proc_tree
         
          
@@ -270,11 +238,7 @@ class CollectorEmonStats(snap.Collector):
         if collected_metric_buffer == []:
             return metrics    
 
-        LOG.debug("buffer not empty")
-        LOG.debug(collected_metric_buffer)
         metrics_dict = collected_metric_buffer.pop(0)
-                
-
 
         if metrics_dict == {}:
             LOG.debug("empty metrics")
