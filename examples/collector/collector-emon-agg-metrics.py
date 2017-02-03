@@ -25,7 +25,7 @@ import threading
 import re
 import snap_plugin.v1 as snap
 import ConfigParser as ConfigParser
-import pandas as pd
+
 
 LOG = logging.getLogger(__name__)
 
@@ -54,9 +54,9 @@ class CollectorThread(threading.Thread):
         pd_table = self.shared_objs.pd_table
         topology_tree = self.shared_objs.topology_tree
         try:
-            logical_proc = pd_table[3][core_num]
-            physical_proc = pd_table[1][core_num]
-            tile = pd_table[4][core_num]
+            physical_proc = pd_table[core_num][0]
+            logical_proc = pd_table[core_num][1]
+            tile = pd_table[core_num][2]
             topology_tree[physical_proc][logical_proc][tile][core_num][metric_name] = val
         except Exception as e:
              LOG.debug(e)
@@ -147,10 +147,10 @@ class CollectorEmonStats(snap.Collector):
          
     def build_tree(self):
         #global pd_table
-        pd_table = pd.read_csv('knl_topo.txt', sep="\s+", header = None)
+        pd_table = []#pd.read_csv('knl_topo.txt', sep="\s+", header = None)
 	proc_map_file = open("knl_topo.txt","r")
 	lines = proc_map_file.readlines()
-        self.pd_table = pd_table
+        
 	proc_tree = {}
 	for line in lines:
 
@@ -158,8 +158,17 @@ class CollectorEmonStats(snap.Collector):
 	    os_core = int(line_list[0])
 	    phys_proc = int(line_list[1])
 	    logical_proc = int(line_list[3])
-	    tile = int(line_list[4])
-	    data = {}
+            pd_table.append(os_core) 
+            pd_table[os_core]=[0,1,2]
+            pd_table[os_core][0] = phys_proc
+            pd_table[os_core][1] = logical_proc
+ 
+            if len(line_list) >= 5:
+                tile = int(line_list[4])
+                pd_table[os_core][2] = tile
+
+            
+	   
 	    if phys_proc not in proc_tree:
 	        proc_tree[phys_proc] = {}
 	        proc_tree[phys_proc][logical_proc] = {}
@@ -178,6 +187,7 @@ class CollectorEmonStats(snap.Collector):
 
 	    if os_core not in proc_tree[phys_proc][logical_proc][tile]:
         	proc_tree[phys_proc][logical_proc][tile][os_core] = {}
+        self.pd_table = pd_table 
 	return proc_tree
         
          
