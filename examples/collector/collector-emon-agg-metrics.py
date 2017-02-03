@@ -153,7 +153,9 @@ class CollectorEmonStats(snap.Collector):
         
 	proc_tree = {}
 	for line in lines:
-
+    
+            if line == "\n" or "Processor" in line or "---" in line:
+               continue        
 	    line_list = line.split()
 	    os_core = int(line_list[0])
 	    phys_proc = int(line_list[1])
