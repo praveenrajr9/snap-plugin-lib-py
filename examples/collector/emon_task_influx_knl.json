@@ -4,7 +4,7 @@
   "log_path": "/tmp/",
   "schedule": {
     "type": "simple",
-    "interval": "2s",
+    "interval": "5s",
     "deadline": "10s"
   },
   "workflow": {
