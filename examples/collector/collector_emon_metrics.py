@@ -76,7 +76,6 @@ class CollectorThread(threading.Thread):
                 if "===" in line or "---" in line:
                     collected_metrics = self.parse_metrics(lines)
                     self.collected_metric_buffer.append(collected_metrics)
-                    LOG.debug(lines)
                     lines = []
                     time.sleep(1)
                     continue
