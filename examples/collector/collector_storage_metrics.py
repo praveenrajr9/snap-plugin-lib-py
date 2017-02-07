@@ -198,6 +198,8 @@ class StorageIOMetrics(snap.Collector):
             self.start_collector = False
             return metrics
         else:
+            
+           
             self.storage_io_stats.previous_stats = self.storage_io_stats.current_stats
             self.storage_io_stats.current_stats = self.storage_io_stats.read_diskstats()
             devices_stat_list = self.storage_io_stats.calculate_diff()
