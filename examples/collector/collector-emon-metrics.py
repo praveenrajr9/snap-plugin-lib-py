@@ -104,7 +104,7 @@ class CollectorEmonStats(snap.Collector):
       # try:
       #     config_parser = ConfigParser.ConfigParser()
       #     config_parser.readfp(open('/home/intel/config.conf'))
-      #     metric_names = config_parser.get('EMON_METRICS','metrics_list')
+      #     metric_names = config_parser.get('METRICS','Metrics_List')
       #     metric_names =  metric_names.split(",")
       #     if metric_names == []:
       #         LOG.debug("no metric names")
