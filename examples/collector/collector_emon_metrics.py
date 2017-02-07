@@ -29,7 +29,7 @@ import ConfigParser as ConfigParser
 LOG = logging.getLogger(__name__)
 
 # collector buffer
-collected_metric_buffer = []   
+#collected_metric_buffer = []   
 
     
 class CollectorThread(threading.Thread):
@@ -38,6 +38,7 @@ class CollectorThread(threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = threadName
+        self.collected_metric_buffer = []
         try: 
             self.emon_output_file = open(emon_output_filepath, "r")
         except Exception as e:
@@ -74,7 +75,7 @@ class CollectorThread(threading.Thread):
             for line in loglines:
                 if "===" in line or "---" in line:
                     collected_metrics = self.parse_metrics(lines)
-                    collected_metric_buffer.append(collected_metrics)
+                    self.collected_metric_buffer.append(collected_metrics)
                     LOG.debug(lines)
                     lines = []
                     time.sleep(1)
@@ -90,6 +91,7 @@ class CollectorEmonStats(snap.Collector):
     def __init__(self):
         self.first_time = True
         self.emon_output_filepath = "/tmp/asnaraya/result.txt"
+        self.collector_thread = None
         super(self.__class__, self).__init__("collector-emon-metrics-py", 1)
          
          
@@ -135,15 +137,15 @@ class CollectorEmonStats(snap.Collector):
         new_metrics = [] 
  
         if self.first_time == True:
-           collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
-           collector_thread.start()
+           self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
+           self.collector_thread.start()
            self.first_time = False
            return metrics
 
-        if collected_metric_buffer == []:
+        if self.collector_thread.collected_metric_buffer == []:
             return metrics    
  
-        metrics_dict = collected_metric_buffer.pop(0)
+        metrics_dict = self.collector_thread.collected_metric_buffer.pop(0)
                 
         if metrics_dict == {}:
             LOG.debug("empty metrics")
