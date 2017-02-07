@@ -34,14 +34,14 @@ collected_metric_buffer = []
     
 class CollectorThread(threading.Thread):
 
-    def __init__(self, threadID, name, counter):
+    def __init__(self, threadID, threadName, emon_output_filepath):
         threading.Thread.__init__(self)
         self.threadID = threadID
-        self.name = name
-        self.counter = counter
-        self.emon_output_file = open("/tmp/asnaraya/result.txt","r")
-        self.linep = None
-       
+        self.name = threadName
+        try: 
+            self.emon_output_file = open(emon_output_filepath, "r")
+        except Exception as e:
+            LOG.debug("File doesnot exist or Cannot be opened permission denied")
 
     def parse_metrics(self, lines):
         stat = {}
@@ -94,7 +94,7 @@ class CollectorEmonStats(snap.Collector):
 
     def __init__(self):
         self.first_time = True
-        self.linep = None
+        self.emon_output_filepath = "/tmp/asnaraya/result.txt"
         super(self.__class__, self).__init__("collector-emon-metrics-py", 1)
          
          
@@ -104,7 +104,7 @@ class CollectorEmonStats(snap.Collector):
       # try:
       #     config_parser = ConfigParser.ConfigParser()
       #     config_parser.readfp(open('/home/intel/config.conf'))
-      #     metric_names = config_parser.get('EMON_METRICS','metrics_list')
+      #     metric_names = config_parser.get('METRICS','Metrics_List')
       #     metric_names =  metric_names.split(",")
       #     if metric_names == []:
       #         LOG.debug("no metric names")
@@ -144,7 +144,7 @@ class CollectorEmonStats(snap.Collector):
         new_metrics = [] 
 
 	if self.first_time == True:
-           collector_thread = CollectorThread(1, "CollectorThread", 1)      
+           collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
            collector_thread.start()
            self.first_time = False
            return metrics
