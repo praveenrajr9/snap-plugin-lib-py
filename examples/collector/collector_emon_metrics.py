@@ -41,22 +41,20 @@ class CollectorThread(threading.Thread):
         try: 
             self.emon_output_file = open(emon_output_filepath, "r")
         except Exception as e:
-            LOG.debug("File doesnot exist or Cannot be opened permission denied")
+            LOG.debug("File does not exist or Cannot be opened.")
 
     def parse_metrics(self, lines):
         stat = {}
         LOG.debug("Parse metrics called")
-       
         for line in lines:
             if "Version" in line or line == " " or line =="\n":
                 continue
             temp_list = line.split("\t")
             metric_name = temp_list[0]
             stat[metric_name] = {}
-            for i in range(2,len(temp_list)-1):
-                stat[metric_name]['cpu'+str(i-2)] = temp_list[i]
+            for i in range(2,len(temp_list) - 1):
+                stat[metric_name]['cpu' + str(i-2)] = temp_list[i]
         return stat
-
 
     def follow(self, thefile):
         thefile.seek(0,1)
@@ -75,15 +73,12 @@ class CollectorThread(threading.Thread):
         try:
             for line in loglines:
                 if "===" in line or "---" in line:
-                    
                     collected_metrics = self.parse_metrics(lines)
                     collected_metric_buffer.append(collected_metrics)
                     LOG.debug(lines)
                     lines = []
                     time.sleep(1)
-                    
                     continue
-                
                 lines.append(line)
         except Exception as e:
             LOG.debug(e)
@@ -112,8 +107,6 @@ class CollectorEmonStats(snap.Collector):
       #     LOG.debug("Error in config file")
       #     LOG.debug(e)
 
-       
-
  
         metric_names = ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_UOPS_RETIRED.L2_HIT_LOADS','MEM_UOPS_RETIRED.L2_MISS_LOADS',
                         'UOPS_RETIRED.PACKED_SIMD','UOPS_RETIRED.SCALAR_SIMD','CYCLES_DIV_BUSY.ALL','MACHINE_CLEARS.FP_ASSIST',
@@ -136,14 +129,12 @@ class CollectorEmonStats(snap.Collector):
             metrics.append(metric)
         return metrics
 
-        
   
     def collect(self, metrics):
         LOG.debug("CollectMetrics called")
-       
         new_metrics = [] 
-
-	if self.first_time == True:
+ 
+        if self.first_time == True:
            collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
            collector_thread.start()
            self.first_time = False
@@ -174,7 +165,6 @@ class CollectorEmonStats(snap.Collector):
                  except Exception as e:
                      LOG.debug("Metric Key Error") 
                      continue
-
         return new_metrics
 
     def get_config_policy(self):

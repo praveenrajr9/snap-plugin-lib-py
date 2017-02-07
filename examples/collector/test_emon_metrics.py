@@ -36,9 +36,10 @@ class TestEmonCollector(unittest.TestCase):
     @mock.patch('__builtin__.open')
     def test_parse_metrics(self, mock_open):
         thread = cem.CollectorThread(1, 'Test', 'fake_emon_path')
-        input_str= ["INST_RETIRED.ANY_P\t1234\t10\t10\t10\t10\n"]
+        input_str= ["INST_RETIRED.ANY_P\t1234\t10\t11\t12\t13\t\n"]
         actual = thread.parse_metrics(input_str)
-        expected = {'INST_RETIRED.ANY_P': {'cpu2': '10', 'cpu0': '10', 'cpu1': '10'}}
+        expected = {'INST_RETIRED.ANY_P': {'cpu2': '12', 'cpu0': '10', 'cpu1':
+            '11', 'cpu3' : '13'}}
         self.assertEqual(expected, actual)
         input_str = ["Version 1.0"]
         actual = thread.parse_metrics(input_str)
