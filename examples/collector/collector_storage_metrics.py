@@ -32,8 +32,6 @@ class StorageIOstats:
                     'writes_merged', 'sectors_written', 'ms_writing',
                     'current_ios', 'ms_doing_io', 'weighted_ms_doing_io']
 
-    columns_partition = ['major_dev_num', 'minor_dev_num', 'device', 'reads',
-                         'sectors_read', 'writes', 'sectors_written']
 
     file_path = '/proc/diskstats'
     def __init__(self):
@@ -45,13 +43,16 @@ class StorageIOstats:
     def read_diskstats(self):
 
         result = {}
-        with open(self.file_path, 'r') as f:
-            for line in (l for l in f  if l != ''):
+        try:
+            file_read = open(self.file_path, 'r')
+        except Exception as e:
+            LOG.debug("File does not exist or cannot be opened")
+        
+        for line in file_read:
+           if line != '':
                 parts = line.split()
                 if len(parts) == len(self.columns_disk):
                     columns = self.columns_disk
-                elif len(parts) == len(self.columns_partition):
-                    columns = self.columns_partition
                 else:
                     continue
                 data = dict(zip(self.columns_disk, parts))
