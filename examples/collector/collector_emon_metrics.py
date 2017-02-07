@@ -135,6 +135,8 @@ class CollectorEmonStats(snap.Collector):
         LOG.debug("CollectMetrics called")
         new_metrics = [] 
  
+        LOG.debug(self.first_time)
+ 
         if self.first_time == True:
            self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
            self.collector_thread.start()
