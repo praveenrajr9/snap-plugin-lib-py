@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "log_level": 2,
+  "log_path": "/tmp/",
+  "schedule": {
+    "type": "simple",
+    "interval": "5s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+	"/intel/btrace/*/IO_unplugs":{},
+	"/intel/btrace/*/Read_Dispatches": {},
+	"/intel/btrace/*/Read_Dispatches_KiB": {},
+	"/intel/btrace/*/Read_Merges": {},
+	"/intel/btrace/*/Read_Merges_KiB": {},
+	"/intel/btrace/*/Read_depth": {},
+	"/intel/btrace/*/Reads_Completed": {},
+	"/intel/btrace/*/Reads_Completed_KiB": {},
+	"/intel/btrace/*/Reads_Queued" : {},
+	"/intel/btrace/*/Reads_Queued_KiB": {},
+	"/intel/btrace/*/Reads_Requeued" :{},
+	"/intel/btrace/*/Timer_unplugs" :{},
+	"/intel/btrace/*/Write_Dispatches":{},
+	"/intel/btrace/*/Write_Dispatches_KiB": {},
+	"/intel/btrace/*/Write_Merges": {},       
+	"/intel/btrace/*/Write_Merges_KiB": {},
+	"/intel/btrace/*/Write_depth": {},        
+	"/intel/btrace/*/Writes_Completed": {},
+	"/intel/btrace/*/Writes_Completed_KiB": {},
+	"/intel/btrace/*/Writes_Queued" :{},
+	"/intel/btrace/*/Writes_Queued_KiB": {},
+	"/intel/btrace/*/Writes_Requeued": {}
+
+      },
+
+      "process": null,
+      "publish": [
+        {
+          "plugin_name": "file",
+          "config": {
+            "file": "/tmp/btrace"
+          }
+        }
+      ]
+    }
+  }
+}
