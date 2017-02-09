@@ -93,7 +93,7 @@ class TestStorageCollector(unittest.TestCase):
         
         self.assertEqual(expected, actual)
 
-    def test_read_diskstats(self):
+    def test_read_diskstats_success(self):
         storage_io_stats = csm.StorageIOstats()
         support_class = SupportClass()
         support_class.create_mock_file()
@@ -112,6 +112,30 @@ class TestStorageCollector(unittest.TestCase):
                              'current_ios': 0, 'ms_reading': 8184, 'major_dev_num': 8, 'weighted_ms_doing_io': 96780}}
         self.assertEqual(actual, expected) 
         support_class.remove_mock_file()
+
+    def test_read_diskstats_fail(self):
+        storage_io_stats = csm.StorageIOstats()
+        support_class = SupportClass()
+        support_class.create_mock_file()
+        storage_io_stats.file_path = support_class.mock_filepath
+        actual = storage_io_stats.read_diskstats()
+        expected = {'sda2': {'ms_writing': 0, 'sectors_read': 100, 'reads_merged': 0, 'ms_doing_io': 184,
+                             'writes': 0, 'reads': 26, 'sectors_written': 0,
+                             'writes_merged': 0, 'current_ios': 0, 'ms_reading': 184, 'major_dev_num': 8,
+                             'weighted_ms_doing_io': 184},
+                    'sda': {'ms_writing': 266445728, 'sectors_read': 40305996, 'reads_merged': 2924,
+                            'ms_doing_io': 9836360, 'writes': 2078488, 'minor_dev_num': 0, 'reads': 489471,
+                            'sectors_written': 636320826, 'writes_merged': 752068, 'current_ios': 0, 'ms_reading': 1746480,
+                            'major_dev_num': 8, 'weighted_ms_doing_io': 268192112},
+                    'sda1': {'ms_writing': 88596, 'sectors_read': 17386, 'reads_merged': 23, 'ms_doing_io': 8252,
+                             'writes': 438, 'minor_dev_num': 1, 'reads': 779, 'sectors_written': 308570, 'writes_merged': 621,
+                             'current_ios': 0, 'ms_reading': 8184, 'major_dev_num': 8, 'weighted_ms_doing_io': 96780}}
+        self.assertNotEqual(actual, expected)
+        
+        support_class.remove_mock_file()
+
+
+
 
     def test_collect(self):
         support_class = SupportClass()
