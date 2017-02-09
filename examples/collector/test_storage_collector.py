@@ -170,6 +170,7 @@ class TestStorageCollector(unittest.TestCase):
         storage_io_metrics = csm.StorageIOMetrics()
         storage_io_metrics.start_collector = True
         actual = storage_io_metrics.collect(metrics)
+        print actual
         expected = metrics
         self.assertEqual(actual, expected)
         
