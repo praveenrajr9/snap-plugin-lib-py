@@ -37,10 +37,18 @@
       "process": null,
       "publish": [
         {
-          "plugin_name": "file",
-          "config": {
-            "file": "/tmp/btrace"
+
+        "plugin_name": "influxdb",
+           "config": {
+            "host": "localhost",
+            "port": 8086,
+            "database": "emon_metrics",
+            "user": "intel",
+            "password": "intel123"
+
           }
+
+          
         }
       ]
     }
