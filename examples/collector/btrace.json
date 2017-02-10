@@ -42,7 +42,7 @@
            "config": {
             "host": "localhost",
             "port": 8086,
-            "database": "emon_metrics",
+            "database": "btrace_metrice",
             "user": "intel",
             "password": "intel123"
 

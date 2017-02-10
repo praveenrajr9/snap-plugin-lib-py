@@ -26,23 +26,21 @@ import threading
 import snap_plugin.v1 as snap
 LOG = logging.getLogger(__name__)
 
-collected_metrics_buffer = []
-
 class CollectThread(threading.Thread):
-    def __init__(self, threadID, name, counter):
+    def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
         self.per_proc_stats_list = []
         self.throughput_stats = {}
+        self.collected_metrics_buffer = []
 
     
     def run(self):
         while True:
-            LOG.debug("run started run")
+      
             metric_collected = self.collect_metrics()
-            LOG.debug(metric_collected)
-            collected_metrics_buffer.append(metric_collected)
+            self.collected_metrics_buffer.append(metric_collected)
 
     def collect_metrics(self):
         LOG.debug("collect_metrics called")
@@ -50,32 +48,29 @@ class CollectThread(threading.Thread):
             self.proc = sub.Popen(["btrace","-s","-t","-w","5","/dev/sda"],stdout=sub.PIPE)
             self.result = self.proc.communicate()
         except Exception as e:
-            LOG.debug("collect_metrics")
+            self.proc.kill()
+            LOG.debug("collect_metrics_error")
             LOG.debug(e)
             return []
-        #try:
-         #   self.proc = sub.Popen(["btrace","-s","-t","-w","5","/dev/sda"],stdout=sub.PIPE)
-        #except Exception as e:
-         #   LOG.debug(e)
-            #return []
 
 
         if len(self.result[0]) == 1:
             LOG.debug("No metrics")
             return []
+        
         try:
             self.result = self.result[0].split("\n")
             collected_metrics = self.parse_metrics(self.result)
         except Exception as e:
             return []
+        
         LOG.debug("collected_metrics")
-        LOG.debug(collected_metrics)
         return collected_metrics
 
 
     def parse_metrics(self, result):
+        
         i=0
-        LOG.debug(result)
         self.per_proc_stats_list = []
         while i < range(len(result)-1):
             try:
@@ -92,10 +87,7 @@ class CollectThread(threading.Thread):
             except Exception as e:
                LOG.debug(e)
 
-        #LOG.debug(self.per_proc_stats_list)
         return self.per_proc_stats_list
-
-
 
     def fill_per_proc_data(self, result, i, proc_num):
         per_proc_stats = {}
@@ -118,10 +110,7 @@ class CollectThread(threading.Thread):
                     stats[temp_key] = int(temp_val[0].strip())
                     if (len(temp_val) == 2):
                         temp_val[1] = re.split("(\d+)",temp_val[1])[1]
-
                         stats[temp_key +"_KiB"] = int(temp_val[1].strip())
-
-
         except Exception as e:
             LOG.debug(e)
         per_proc_stats[proc_num] = stats
@@ -136,25 +125,14 @@ class CollectThread(threading.Thread):
 
         events = result[i+1].split(":")
         stats[events[0]] = events[1]
-
-
         return stats
 
-
-class IOBtraceStats:
-    def __init__(self):
-        self.per_proc_stats_list = []
-        self.throughput_stats = {}
-        
-
-
 class CollectorBtraceStats(snap.Collector):
+    
     def __init__(self):
         self.disable_event = 0
-        # collect_thread = CollectThread(1, "Thread-1", 1)
-        # collect_thread.start()
+        self.collect_thread = None
         super(self.__class__, self).__init__("collector-btrace-metrics-py", 1)
-         
          
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
@@ -167,8 +145,7 @@ class CollectorBtraceStats(snap.Collector):
                         'Writes_Completed','Writes_Completed_KiB', 'Write_Merges', 
                         'Write_Merges_KiB', 'Write_depth', 'IO_unplugs', 'Timer_unplugs' 
                          ]
- 
-                         
+                          
         for key in metric_names:
             metric = snap.Metric(
                 namespace=[
@@ -181,22 +158,24 @@ class CollectorBtraceStats(snap.Collector):
                 
             )
             metrics.append(metric)
+
         return metrics
     
     def collect(self, metrics):
         LOG.debug("CollectMetrics called")
        
         new_metrics = [] 
+
         if self.disable_event == 0:
             self.disable_event = 1
-            #self.proc = sub.Popen(["btrace","-s","-t","-w","5","/dev/sda"],stdout=sub.PIPE)
             LOG.debug("first time ")
-            collect_thread = CollectThread(1, "Thread-1", 1)
-            collect_thread.start()
+            self.collect_thread = CollectThread(1, "BtraceThread")
+            self.collect_thread.start()
             return metrics
-        if collected_metrics_buffer == []:
+
+        if self.collect_thread.collected_metrics_buffer == []:
             return metrics
-        metric_list = collected_metrics_buffer.pop(0)
+        metric_list = self.collect_thread.collected_metrics_buffer.pop(0)
         
                     
         if len(metric_list) <= 1:
@@ -211,9 +190,6 @@ class CollectorBtraceStats(snap.Collector):
                 typ = metric.namespace[2].value
                 if typ == '*':
                     try:                        
-                        LOG.debug(stats[proc_name][metric.namespace[3].value])
-                        LOG.debug(metric.namespace[3].value)
-                        LOG.debug(stats[proc_name]) 
                         new_metric = snap.Metric(version=1, Description="btrace metrics")
                         new_metric.namespace.add_static_element("intel")
                         new_metric.namespace.add_static_element("btrace")
@@ -229,13 +205,9 @@ class CollectorBtraceStats(snap.Collector):
 
         return new_metrics
 
-
-
     def get_config_policy(self):
         LOG.debug("GetConfigPolicy called")
         return snap.ConfigPolicy()
-
-
 
 if __name__ == "__main__":
 
