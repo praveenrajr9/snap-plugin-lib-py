@@ -27,6 +27,7 @@ import snap_plugin.v1 as snap
 LOG = logging.getLogger(__name__)
 
 class CollectThread(threading.Thread):
+
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -34,18 +35,41 @@ class CollectThread(threading.Thread):
         self.per_proc_stats_list = []
         self.throughput_stats = {}
         self.collected_metrics_buffer = []
+        self.command = self.get_command()
+        
+    def get_command(self):
+        btrace_comm = ["btrace","-s","-t","-w","5"]
+        
+        try:
+            lsblk = sub.Popen(["lsblk"],stdout=sub.PIPE)
+            devices =  sub.Popen(["grep","disk"],stdin=lsblk.stdout, stdout = sub.PIPE)
+        except Exception as e:
+            LOG.debug("Failed to detect disk drives")
+            lsblk.kill()
+            devices.kill()
+
+        disk_devices = devices.communicate()
+        disk_devices = disk_devices[0]
+        disk_devices = disk_devices.split("\n")
+        sd_devices = []
+ 
+        for disk in disk_devices:
+            if disk != '':
+                sd_device = disk.split()
+                btrace_comm.append("/dev/"+sd_device[0])
+        return btrace_comm        
 
     
     def run(self):
         while True:
       
-            metric_collected = self.collect_metrics()
+            metric_collected = self.collect_metrics(self.command)
             self.collected_metrics_buffer.append(metric_collected)
 
-    def collect_metrics(self):
+    def collect_metrics(self, command = ["btrace","-s","-t","-w","5","/dev/sda"]):
         LOG.debug("collect_metrics called")
         try:
-            self.proc = sub.Popen(["btrace","-s","-t","-w","5","/dev/sda"],stdout=sub.PIPE)
+            self.proc = sub.Popen(command, stdout=sub.PIPE)
             self.result = self.proc.communicate()
         except Exception as e:
             self.proc.kill()
