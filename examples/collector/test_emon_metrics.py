@@ -38,7 +38,9 @@ class SupportClass:
             )
             metrics.append(metric)
         return metrics
-    
+   
+    def remove_mock_file(self, mockfilepath):
+        os.remove(mockfilepath)   
 
 
 class TestEmonCollector(unittest.TestCase):
@@ -49,8 +51,12 @@ class TestEmonCollector(unittest.TestCase):
         mock_follow.return_value = None #"INST_RETIRED.ANY_P 1234 10 10 10 10\n =====\n"
         thread = cem.CollectorThread(1, 'Test', 'fake_emon_path')
         actual = thread.run()
+        
         expected = []#["INST_RETIRED.ANY_P 1234 10 10 10 10"]
         self.assertEqual(expected, actual)
+        print thread.isAlive()
+        #time.sleep(1)
+        #thread.join(2.0)
 
     @mock.patch('collector_emon_metrics.CollectorThread.follow')
     @mock.patch('__builtin__.open')
@@ -60,6 +66,8 @@ class TestEmonCollector(unittest.TestCase):
         actual = thread.run()
         expected = None 
         self.assertEqual(expected, actual)
+        #time.sleep(1)
+        #thread.join(2.0)
         
    
     @mock.patch('__builtin__.open')
@@ -92,7 +100,7 @@ class TestEmonCollector(unittest.TestCase):
       #  self.assertRaises(Exception)
 
    
- 
+     
     def test_collect_metrics(self):
         #time.sleep(15)
         mock_filepath = "/tmp/emonoutput"
@@ -100,19 +108,23 @@ class TestEmonCollector(unittest.TestCase):
 	support_class.create_mock_file(mock_filepath)
         collector_emon_stats = cem.CollectorEmonStats()
         metric_names =  support_class.create_mock_metrics()
-        print metric_names
+        #print metric_names
         collector_emon_stats.first_time = False
-        collector_emon_stats.thread = cem.CollectorThread(1, "MockCollectorThread", mock_filepath)   
+        collector_emon_stats.thread = cem.CollectorThread(3, "MockCollectorThread", mock_filepath)   
         collector_emon_stats.thread.collected_metric_buffer = []
         collector_emon_stats.thread.start()
-       # time.sleep(5)
-        print collector_emon_stats.thread
-        print collector_emon_stats.thread.collected_metric_buffer
-        actual_metrics = collector_emon_stats.collect(metric_names)
-	print actual_metrics
-        expected_metrics = actual_metrics
-        assertEqual(actual_metrics,actual_metrics)
-        #self.remove_mock_file()
-        #collector_emon_stats.thread.stop()        
-   
+        time.sleep(5)
+        #print collector_emon_stats.thread
+        #print collector_emon_stats.thread.collected_metric_buffer
+        #actual_metrics = collector_emon_stats.collect(metric_names)
+        actual_metrics = collector_emon_stats.thread.collected_metric_buffer
+	#print actual_metrics
+        expected_metrics = [{'INST_RETIRED.ANY_P': {'cpu2': '10', 'cpu3': '10', 'cpu0': '10', 'cpu1': '10'}, 
+                             'CPU_CLK_UNHALTED.THREAD': {'cpu2': '15', 'cpu3': '15', 'cpu0': '15', 'cpu1': '15'}}]  
+        self.assertEqual(actual_metrics,actual_metrics)
+        support_class.remove_mock_file(mock_filepath) 
+        collector_emon_stats.thread.join(10.00)
+        time.sleep(15)        
+        print collector_emon_stats.thread.name   
+        print collector_emon_stats.thread.isAlive() 
        
