@@ -30,8 +30,9 @@
 	"/intel/btrace/*/Writes_Completed_KiB": {},
 	"/intel/btrace/*/Writes_Queued" :{},
 	"/intel/btrace/*/Writes_Queued_KiB": {},
-	"/intel/btrace/*/Writes_Requeued": {}
-
+	"/intel/btrace/*/Writes_Requeued": {},
+        "/intel/btrace/*/throughput_reads_KiB": {},
+        "/intel/btrace/*/throughput_writes_KiB": {}
       },
 
       "process": null,

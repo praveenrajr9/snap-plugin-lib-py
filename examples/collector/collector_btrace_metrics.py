@@ -106,7 +106,7 @@ class CollectThread(threading.Thread):
                     i = i + 8
                     continue
                 if len_temp_list == 5 and len_temp_list != 0:
-                    self.throughput_stats = self.fill_throughput_data(result, i)
+                    self.fill_throughput_data(result, i)
                     break
                 i = i + 1
             except Exception as e:
@@ -144,13 +144,22 @@ class CollectThread(threading.Thread):
 
     def fill_throughput_data(self, result, i):
         stats = {}
-        throughput = result[i].split(":")
-        read_writes = throughput[1].split(" / ")
-        stats[throughput[0]] = read_writes
-
-        events = result[i+1].split(":")
-        stats[events[0]] = events[1]
-        return stats
+        per_proc_stats = {}
+        try:
+            throughput = result[i].split(":")
+            read_writes = throughput[1].split(" / ")
+            stats[throughput[0]] = read_writes
+            stats['throughput_reads_KiB'] = read_writes[0].split("KiB/s")[0]
+            stats['throughput_writes_KiB'] = read_writes[1].split("KiB/s")[0]
+            events = result[i+1].split(":")
+            stats[events[0]] = events[1]
+            per_proc_stats['Throughput'] = stats
+            self.per_proc_stats_list.append(per_proc_stats)
+        except Exception as e:
+            LOG.debug(e)
+            LOG.debug("Metric Key Error")
+            
+        
 
 class CollectorBtraceStats(snap.Collector):
     
@@ -168,7 +177,8 @@ class CollectorBtraceStats(snap.Collector):
                         'Read_depth', 'Writes_Queued', 'Writes_Queued_KiB', 
                         'Write_Dispatches', 'Write_Dispatches_KiB', 'Writes_Requeued',
                         'Writes_Completed','Writes_Completed_KiB', 'Write_Merges', 
-                        'Write_Merges_KiB', 'Write_depth', 'IO_unplugs', 'Timer_unplugs' 
+                        'Write_Merges_KiB', 'Write_depth', 'IO_unplugs', 'Timer_unplugs',
+                        'throughput_reads_KiB','throughput_writes_KiB'
                          ]
                           
         for key in metric_names:
@@ -201,8 +211,8 @@ class CollectorBtraceStats(snap.Collector):
         if self.collect_thread.collected_metrics_buffer == []:
             return metrics
         metric_list = self.collect_thread.collected_metrics_buffer.pop(0)
-        
-                    
+        LOG.debug(metric_list)       
+                     
         if len(metric_list) <= 1:
             LOG.debug("empty metrics")
             return metrics
