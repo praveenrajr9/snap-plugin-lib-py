@@ -94,6 +94,7 @@ class CollectThread(threading.Thread):
 
     def parse_metrics(self, result):
         
+        LOG.debug("parse_metrics") 
         i=0
         self.per_proc_stats_list = []
         while i < range(len(result)-1):
@@ -117,7 +118,7 @@ class CollectThread(threading.Thread):
         per_proc_stats = {}
         stats = {}
         try:
-            for k in range(i+1,i+8):
+            for k in range(i+1, i+8):
                 temp_list = result[k].split("\t")
                 for val in temp_list:
 
@@ -226,7 +227,7 @@ class CollectorBtraceStats(snap.Collector):
                         LOG.debug("metric key error") 
                         LOG.debug(e)
                         continue
-
+        
         return new_metrics
 
     def get_config_policy(self):
