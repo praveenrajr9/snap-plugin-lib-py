@@ -50,15 +50,16 @@ class StorageIOstats:
             LOG.debug("File does not exist or cannot be opened")
         
         for line in read_lines:
-           if line != '':
-                parts = line.split()
-                if len(parts) == len(self.columns_disk):
-                    columns = self.columns_disk
-                else:
-                    continue
-                data = dict(zip(self.columns_disk, parts))
-                result[data['device']] = dict((k, int(v)) for k, v in data.iteritems() if k != 'device')
-                self.devices.append(data['device'])
+            if line == '' or 'ram' in line or 'loop' in line:
+                continue 
+            parts = line.split()
+            if len(parts) == len(self.columns_disk):
+                columns = self.columns_disk
+            else:
+                continue
+            data = dict(zip(self.columns_disk, parts))
+            result[data['device']] = dict((k, int(v)) for k, v in data.iteritems() if k != 'device')
+            self.devices.append(data['device'])
                 
         return result
 

@@ -93,7 +93,9 @@ class TestEmonCollector(unittest.TestCase):
         actual = thread.parse_metrics(input_str)
         expected = {}
         self.assertEqual(expected, actual)
-    
+   
+    def test_upload_catalog(self):
+         
     '''    
     #def test_init_collector_success(self):
      #   collector_emon_stats = cem.CollectorEmonStats()	  	

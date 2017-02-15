@@ -89,7 +89,7 @@ class CollectorEmonStats(snap.Collector):
 
     def __init__(self):
         self.first_time = True
-        self.emon_output_filepath = "/tmp/asnaraya/result.txt"
+        self.emon_output_filepath = "/tmp/result.txt"
         self.collector_thread = None
         super(self.__class__, self).__init__("collector-emon-metrics-py", 1)
          
@@ -97,24 +97,17 @@ class CollectorEmonStats(snap.Collector):
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
         metrics = []
-      # try:
-      #     config_parser = ConfigParser.ConfigParser()
-      #     config_parser.readfp(open('/home/intel/config.conf'))
-      #     metric_names = config_parser.get('METRICS','Metrics_List')
-      #     metric_names =  metric_names.split(",")
-      #     if metric_names == []:
-      #         LOG.debug("no metric names")
-      # except Exception as e:
-      #     LOG.debug("Error in config file")
-      #     LOG.debug(e)
-
- 
-        metric_names = ['INST_RETIRED.ANY_P','CPU_CLK_UNHALTED.THREAD','MEM_UOPS_RETIRED.L2_HIT_LOADS','MEM_UOPS_RETIRED.L2_MISS_LOADS',
-                        'UOPS_RETIRED.PACKED_SIMD','UOPS_RETIRED.SCALAR_SIMD','CYCLES_DIV_BUSY.ALL','MACHINE_CLEARS.FP_ASSIST',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=ANY_RESPONSE','OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_NEAR',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=DDR_FAR','OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_NEAR',
-                        'OFFCORE_RESPONSE:request=ANY_REQUEST:response=MCDRAM_FAR']
- 
+        try:
+            config_parser = ConfigParser.ConfigParser()
+            config_parser.readfp(open('/etc/emon_snap.conf'))
+            metric_names = config_parser.get('Metrics','Metrics_List')
+            metric_names =  metric_names.split(",")
+            if metric_names == []:
+                LOG.debug("no metric names")
+        except Exception as e:
+            LOG.debug("Error in config file")
+            LOG.debug(e)
+            return metrics
                          
         for key in metric_names:
             metric = snap.Metric(
@@ -136,10 +129,10 @@ class CollectorEmonStats(snap.Collector):
         new_metrics = [] 
          
         if self.first_time == True:
-           self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
-           self.collector_thread.start()
-           self.first_time = False
-           return metrics
+            self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
+            self.collector_thread.start()
+            self.first_time = False
+            return metrics
 
         if self.collector_thread.collected_metric_buffer == []:
             return metrics    
@@ -149,7 +142,7 @@ class CollectorEmonStats(snap.Collector):
         if metrics_dict == {}:
             LOG.debug("empty metrics")
             return metrics
-                
+        timestamp = time.time()        
         for metric in metrics:             
             typ = metric.namespace[2].value
             if typ == '*':
@@ -161,7 +154,7 @@ class CollectorEmonStats(snap.Collector):
                          new_metric.namespace.add_static_element(cpu_num)
                          new_metric.namespace.add_static_element(metric.namespace[3].value)
                          new_metric.data = int(metric_val)
-                         new_metric.timestamp = time.time()
+                         new_metric.timestamp = timestamp
                          new_metrics.append(new_metric)
                  except Exception as e:
                      LOG.debug("Metric Key Error") 
