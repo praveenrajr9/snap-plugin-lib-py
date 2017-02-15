@@ -30,7 +30,7 @@
         {
            "plugin_name": "influxdb",
            "config": {
-            "host": "localhost",
+            "host": "10.223.197.138",
             "port": 8086,
             "database": "disk_metrics",
             "user": "intel",

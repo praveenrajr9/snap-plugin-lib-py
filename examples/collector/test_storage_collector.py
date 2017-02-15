@@ -137,7 +137,7 @@ class TestStorageCollector(unittest.TestCase):
 
 
 
-    def test_collect(self):
+    def test_collect_success(self):
         support_class = SupportClass()
         support_class.create_new_mock_file()
         storage_io_stats = csm.StorageIOstats()
@@ -163,6 +163,7 @@ class TestStorageCollector(unittest.TestCase):
         actual = len(storage_io_metrics.collect(metrics))
         expected = 52
         self.assertEqual(actual, expected)
+        support_class.remove_mock_file()
 
     def test_collect_first_time_success(self):
         support_class = SupportClass()
@@ -170,8 +171,27 @@ class TestStorageCollector(unittest.TestCase):
         storage_io_metrics = csm.StorageIOMetrics()
         storage_io_metrics.start_collector = True
         actual = storage_io_metrics.collect(metrics)
-        print actual
         expected = metrics
         self.assertEqual(actual, expected)
         
-       
+    def test_collect_fail(self):
+        support_class = SupportClass()
+        support_class.create_new_mock_file()
+        storage_io_stats = csm.StorageIOstats()
+        storage_io_stats.current_stats = {'sda2': {'ms_writing': 0, 'sectors_read': 32, 'reads_merged': 0, 'ms_doing_io': 184,
+                                                   'writes': 0, 'minor_dev_num': 2, 'reads': 26, 'sectors_written': 0,
+                                                   'writes_merged': 0, 'current_ios': 0, 'ms_reading': 184, 'major_dev_num': 8,
+                                                   'weighted_ms_doing_io': 184},
+                                           'sda': {'ms_writing': 266445728, 'sectors_read': 40305996, 'reads_merged': 2924,
+                                                   'ms_doing_io': 9836360, 'writes': 2078488, 'minor_dev_num': 0, 'reads': 489471,
+                                                   'sectors_written': 636320826, 'writes_merged': 752068, 'current_ios': 0, 'ms_reading': 1746480,
+                                                   'major_dev_num': 8, 'weighted_ms_doing_io': 268192112},
+                                           'sda1': {'ms_writing': 88596, 'sectors_read': 17386, 'reads_merged': 23, 'ms_doing_io': 8252,
+                                                    'writes': 438, 'minor_dev_num': 1, 'reads': 779, 'sectors_written': 308570, 'writes_merged': 621,
+                                                    'current_ios': 0, 'ms_reading': 8184, 'major_dev_num': 8, 'weighted_ms_doing_io': 96780}}
+        storage_io_stats.file_path = "MockPathError"
+        storage_io_metrics = csm.StorageIOMetrics()
+        storage_io_metrics.start_collector = False
+        storage_io_metrics.storage_io_stats = storage_io_stats
+        metrics = support_class.create_mock_metrics()
+        self.assertRaises(Exception) 

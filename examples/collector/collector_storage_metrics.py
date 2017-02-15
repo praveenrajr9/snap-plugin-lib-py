@@ -45,10 +45,11 @@ class StorageIOstats:
         result = {}
         try:
             file_read = open(self.file_path, 'r')
+            read_lines = file_read.readlines()
         except Exception as e:
             LOG.debug("File does not exist or cannot be opened")
         
-        for line in file_read:
+        for line in read_lines:
            if line != '':
                 parts = line.split()
                 if len(parts) == len(self.columns_disk):
@@ -61,31 +62,19 @@ class StorageIOstats:
                 
         return result
 
-    @staticmethod
-    def S_VALUE(curr ,prev):
-        return float(curr - prev)
+    #@staticmethod
+    #def S_VALUE(curr ,prev):
+     #   return float(curr - prev)
 
     def calculate_diff(self):
-        all_reads_per_itv = 0.0
-        all_writes_per_itv = 0.0
-        all_transfer_per_itv = 0.0
-        all_rrqm_per_itv = 0.0
-        all_wrqm_per_itv = 0.0
-        all_rdsec_per_itv = 0.0
-        all_wrsec_per_itv = 0.0
-        all_avgrq_sz = 0.0
-        all_avgqu_sz = 0.0
-        all_await = 0.0
-        all_r_await = 0.0
-        all_w_await = 0.0
-        all_util = 0.0
+ 
         if len(self.current_stats) == len(self.previous_stats):
             for device in self.devices:
-                reads_per_itv =  self.S_VALUE(self.current_stats[device]['reads'], self.previous_stats[device]['reads'])
-                writes_per_itv = self.S_VALUE(self.current_stats[device]['writes'], self.previous_stats[device]['writes'])
+                reads_per_itv =  float(self.current_stats[device]['reads'] - self.previous_stats[device]['reads'])
+                writes_per_itv = float(self.current_stats[device]['writes'] - self.previous_stats[device]['writes'])
                 transfer_per_itv = reads_per_itv + writes_per_itv
-                rrqm_per_itv = self.S_VALUE(self.current_stats[device]['reads_merged'], self.previous_stats[device]['reads_merged'])
-                wrqm_per_itv = self.S_VALUE(self.current_stats[device]['writes_merged'], self.previous_stats[device]['writes_merged'])
+                rrqm_per_itv = float(self.current_stats[device]['reads_merged'] - self.previous_stats[device]['reads_merged'])
+                wrqm_per_itv = float(self.current_stats[device]['writes_merged'] - self.previous_stats[device]['writes_merged'])
                 rdsec_per_itv = (self.current_stats[device]['sectors_read'] - self.previous_stats[device]['sectors_read']) * 512
                 wrsec_per_itv = (self.current_stats[device]['sectors_written'] - self.previous_stats[device]['sectors_written']) * 512
                 avgrq_sz = 0.0
@@ -109,22 +98,6 @@ class StorageIOstats:
                 util = self.current_stats[device]['ms_doing_io'] - self.previous_stats[device]['ms_doing_io']
                 util = util / 10.0
 
-
-                all_reads_per_itv = all_reads_per_itv + reads_per_itv
-                all_writes_per_itv = all_writes_per_itv + writes_per_itv
-                all_transfer_per_itv = all_transfer_per_itv + transfer_per_itv
-                all_rrqm_per_itv = all_rrqm_per_itv + rrqm_per_itv
-                all_wrqm_per_itv = all_wrqm_per_itv + wrqm_per_itv
-                all_rdsec_per_itv = all_rdsec_per_itv + rdsec_per_itv
-                all_wrsec_per_itv = all_wrsec_per_itv + wrsec_per_itv
-                all_avgrq_sz = all_avgrq_sz + avgrq_sz
-                all_avgqu_sz = all_avgqu_sz + avgqu_sz
-                all_await = all_await + await_time
-                all_r_await = all_r_await + r_await
-                all_w_await = all_w_await + w_await
-                all_util = all_util + util
-
-
                 self.metric_list[device] = {}
                 self.metric_list[device]['reads_per_itv'] = reads_per_itv
                 self.metric_list[device]['writes_per_itv'] = writes_per_itv
@@ -139,21 +112,6 @@ class StorageIOstats:
                 self.metric_list[device]['r_await'] = r_await
                 self.metric_list[device]['w_await'] = w_await
                 self.metric_list[device]['util'] = util
-        all_util = all_util / len(self.current_stats)
-        self.metric_list['ALL'] = {}
-        self.metric_list['ALL']['reads_per_itv'] = all_reads_per_itv
-        self.metric_list['ALL']['writes_per_itv'] = all_writes_per_itv
-        self.metric_list['ALL']['transfer_per_itv'] = all_transfer_per_itv
-        self.metric_list['ALL']['rrqm_per_itv'] = all_rrqm_per_itv
-        self.metric_list['ALL']['wrqm_per_itv'] = all_wrqm_per_itv
-        self.metric_list['ALL']['rdsec_per_itv'] = all_rdsec_per_itv
-        self.metric_list['ALL']['wrsec_per_itv'] = all_wrsec_per_itv
-        self.metric_list['ALL']['avgrq_sz'] = all_avgrq_sz
-        self.metric_list['ALL']['await'] = all_await
-        self.metric_list['ALL']['avgqu_sz'] = all_avgqu_sz
-        self.metric_list['ALL']['r_await'] = all_r_await
-        self.metric_list['ALL']['w_await'] = all_w_await
-        self.metric_list['ALL']['util'] = all_util
         return self.metric_list
 
 

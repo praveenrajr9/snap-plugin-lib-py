@@ -93,8 +93,8 @@ class TestEmonCollector(unittest.TestCase):
         actual = thread.parse_metrics(input_str)
         expected = {}
         self.assertEqual(expected, actual)
-     
     
+    '''    
     #def test_init_collector_success(self):
      #   collector_emon_stats = cem.CollectorEmonStats()	  	
       #  self.assertRaises(Exception)
@@ -127,4 +127,4 @@ class TestEmonCollector(unittest.TestCase):
         time.sleep(15)        
         print collector_emon_stats.thread.name   
         print collector_emon_stats.thread.isAlive() 
-       
+    '''   
