@@ -162,7 +162,7 @@ class StorageIOMetrics(snap.Collector):
             self.storage_io_stats.previous_stats = self.storage_io_stats.current_stats
             self.storage_io_stats.current_stats = self.storage_io_stats.read_diskstats()
             devices_stat_list = self.storage_io_stats.calculate_diff()
-            
+            timestamp = time.time()    
             for metric in metrics:
                
 	        dev_type = metric.namespace[3].value
@@ -176,7 +176,7 @@ class StorageIOMetrics(snap.Collector):
                             new_metric.namespace.add_static_element(device)
                             new_metric.namespace.add_static_element(metric.namespace[4].value)                            
                             new_metric.data = devices_stat_list[device][metric.namespace[4].value]
-                            new_metric.timestamp = time.time()
+                            new_metric.timestamp = timestamp
                             new_metrics.append(new_metric)
                         except Exception as e:
                             LOG.debug(e)
@@ -190,7 +190,7 @@ class StorageIOMetrics(snap.Collector):
                         new_metric.namespace.add_static_element(dev_type)
                         new_metric.namespace.add_static_element(metric.namespace[4].value)
                         new_metric.data = devices_stat_list[dev_type][metric.namespace[4].value]
-                        new_metric.timestamp = time.time()
+                        new_metric.timestamp = timestamp
                         new_metrics.append(new_metric)
                     except Exception as e:
                         LOG.debug(e)
