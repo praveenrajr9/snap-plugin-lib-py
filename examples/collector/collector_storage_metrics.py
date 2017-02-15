@@ -100,19 +100,21 @@ class StorageIOstats:
                 util = util / 10.0
 
                 self.metric_list[device] = {}
-                self.metric_list[device]['reads_per_itv'] = reads_per_itv
-                self.metric_list[device]['writes_per_itv'] = writes_per_itv
-                self.metric_list[device]['transfer_per_itv'] = transfer_per_itv
-                self.metric_list[device]['rrqm_per_itv'] = rrqm_per_itv
-                self.metric_list[device]['wrqm_per_itv'] = wrqm_per_itv
-                self.metric_list[device]['rdsec_per_itv'] = rdsec_per_itv
-                self.metric_list[device]['wrsec_per_itv'] = wrsec_per_itv
-                self.metric_list[device]['avgrq_sz'] = avgrq_sz
-                self.metric_list[device]['await'] = await_time
-                self.metric_list[device]['avgqu_sz'] = avgqu_sz
-                self.metric_list[device]['r_await'] = r_await
-                self.metric_list[device]['w_await'] = w_await
-                self.metric_list[device]['util'] = util
+                storage_stats = {}
+                storage_stats['reads_per_itv'] = reads_per_itv
+                storage_stats['writes_per_itv'] = writes_per_itv
+                storage_stats['transfer_per_itv'] = transfer_per_itv
+                storage_stats['rrqm_per_itv'] = rrqm_per_itv
+                storage_stats['wrqm_per_itv'] = wrqm_per_itv
+                storage_stats['rdsec_per_itv'] = rdsec_per_itv
+                storage_stats['wrsec_per_itv'] = wrsec_per_itv
+                storage_stats['avgrq_sz'] = avgrq_sz
+                storage_stats['await'] = await_time
+                storage_stats['avgqu_sz'] = avgqu_sz
+                storage_stats['r_await'] = r_await
+                storage_stats['w_await'] = w_await
+                storage_stats['util'] = util
+                self.metric_list[device] = storage_stats
         return self.metric_list
 
 
