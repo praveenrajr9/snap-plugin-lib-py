@@ -27,10 +27,6 @@ import snap_plugin.v1 as snap
 import ConfigParser as ConfigParser
 
 LOG = logging.getLogger(__name__)
-
-# collector buffer
-#collected_metric_buffer = []   
-
     
 class CollectorThread(threading.Thread):
 
@@ -38,6 +34,7 @@ class CollectorThread(threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = threadName
+        self.timestamp = time.time()
         self.collected_metric_buffer = []
         try: 
             self.emon_output_file = open(emon_output_filepath, "r")
@@ -73,6 +70,8 @@ class CollectorThread(threading.Thread):
         lines = []
         try:
             for line in loglines:
+                if "===" in line:
+                    self.timestamp = time.time()
                 if "===" in line or "---" in line:
                     collected_metrics = self.parse_metrics(lines)
                     self.collected_metric_buffer.append(collected_metrics)
@@ -82,7 +81,7 @@ class CollectorThread(threading.Thread):
                 lines.append(line)
         except Exception as e:
             LOG.debug(e)
-            return []
+            
     
         
 class CollectorEmonStats(snap.Collector):
@@ -142,7 +141,7 @@ class CollectorEmonStats(snap.Collector):
         if metrics_dict == {}:
             LOG.debug("empty metrics")
             return metrics
-        timestamp = time.time()        
+        timestamp = self.collector_thread.timestamp        
         for metric in metrics:             
             typ = metric.namespace[2].value
             if typ == '*':
