@@ -128,7 +128,11 @@ class CollectorEmonStats(snap.Collector):
         new_metrics = [] 
          
         if self.first_time == True:
-            self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
+            try:
+                self.collector_thread = CollectorThread(1, "CollectorThread", self.emon_output_filepath)      
+            except Exception as e:
+                LOG.debug("collector_thread could not be created, Error in opening file")
+                return metrics
             self.collector_thread.start()
             self.first_time = False
             return metrics
