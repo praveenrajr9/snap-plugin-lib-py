@@ -88,7 +88,7 @@ class CollectorEmonStats(snap.Collector):
 
     def __init__(self):
         self.first_time = True
-        self.emon_output_filepath = "/tmp/result.txt"
+        self.emon_output_filepath = "/opt/intel_snap_plugins/result.txt"
         self.collector_thread = None
         super(self.__class__, self).__init__("collector-emon-metrics-py", 1)
          
@@ -100,6 +100,7 @@ class CollectorEmonStats(snap.Collector):
             config_parser = ConfigParser.ConfigParser()
             config_parser.readfp(open('/etc/emon_snap.conf'))
             metric_names = config_parser.get('Metrics','Metrics_List')
+            self.emon_output_filepath = config_parser.get('Paths','Emon_Output_Path')
             metric_names =  metric_names.split(",")
             if metric_names == []:
                 LOG.debug("no metric names")
